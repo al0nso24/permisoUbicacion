@@ -7,7 +7,7 @@ import * as Location from 'expo-location';
 
 export default function Ubicacion() {
     const [estado, setEstado] = useState('pendiente'); //empieza en pendiente
-    const [coordenadas, setCoordenadas] = useState(null);
+    const [coordenadas, setCoordenadas] = useState(null); //empieza null porque no se conocen aún
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState('');
 
