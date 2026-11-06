@@ -2,42 +2,48 @@
 import { useState } from 'react';
 import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+//Importa todas las funciones de expo-location dentro del objeto Location
 import * as Location from 'expo-location';
 
 export default function Ubicacion() {
-    const [estado, setEstado] = useState('pendiente');
+    const [estado, setEstado] = useState('pendiente'); //empieza en pendiente
     const [coordenadas, setCoordenadas] = useState(null);
     const [cargando, setCargando] = useState(false);
     const [error, setError] = useState('');
 
     const obtenerUbicacion = async () => {
-        setCargando(true);
+        setCargando(true); //empieza a cargar
         setError('');
         try {
             //Pedimos permiso. "Foreground" = solo con la app abierta
             const { status } = await Location.requestForegroundPermissionsAsync();
             setEstado(status);
+
             if (status !== 'granted') {
-                setCoordenadas(null);
+                setCoordenadas(null); //sin permiso no se debe mostrar las coordenadas
                 return; //sin permiso no se debe leer la ubicación
             }
 
             //Con permiso, leemos la posición actual usando el GPS
             //Si falla, usamos la última posición que recuerda el teléfono
-            const posicion = await
-                Location.getCurrentPositionAsync({
-                    accuracy: Location.Accuracy.High,
+            //getCurrentPositionAsync(...) pide al teléfono su posición actual
+            const posicion = await Location.getCurrentPositionAsync({
+                    accuracy: Location.Accuracy.High, //precisión alta
+
+                //Pedir la última posición que el teléfono recuerde
                 }).catch(() => Location.getLastKnownPositionAsync());
 
+            //Si no hay posición disponible
             if (posicion === null) {
                 setError('Aún no hay señal de ubicación. Inténtalo de nuevo.');
                 return;
             }
-            setCoordenadas(posicion.coords);
+            setCoordenadas(posicion.coords); //guarda las coordenadas
         } catch (e) {
-            //Pasa, por ejemplo, si el GPS del teléfono está apagado.
+            //Pasa, por ejemplo, si el GPS del teléfono está apagado
             setError('No se pudo leer la ubicación. Revisa que el GPS esté activo.');
         } finally {
+            //Apaga el estado de carga
             setCargando(false); //se ejecuta siempre, con o sin error
         }
     };
@@ -53,8 +59,9 @@ export default function Ubicacion() {
                 onPress={obtenerUbicacion}
                 disabled={cargando}
             />
-            {cargando && <ActivityIndicator style={styles.espacio}
-                size="large" />}
+            {/*Si cargando es true, aparece el indicador*/}
+            {cargando && <ActivityIndicator style={styles.espacio} size="large" />}
+            {/*Si existen coordenadas*/}
             {coordenadas && (
                 <View style={styles.tarjeta}>
                     <Text style={styles.dato}>Latitud:
@@ -63,12 +70,13 @@ export default function Ubicacion() {
                         {coordenadas.longitude.toFixed(4)}</Text>
                 </View>
             )}
+            {/*Si no se concede permiso*/}
             {estado === 'denied' && (
                 <Text style={styles.aviso}>
-                    Sin el permiso de ubicación no podemos mostrar tu
-                    posición.
+                    Sin el permiso de ubicación no podemos mostrar tu posición.
                 </Text>
             )}
+            {/*Comprueba si error no está vacío. Si contiene un mensaje, lo muestra*/}
             {error !== '' && <Text
                 style={styles.aviso}>{error}</Text>}
         </View>
