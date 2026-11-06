@@ -4,7 +4,7 @@ import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native'
 import { StatusBar } from 'expo-status-bar';
 import * as Location from 'expo-location';
 
-export default function App() {
+export default function Ubicacion() {
     const [estado, setEstado] = useState('pendiente');
     const [coordenadas, setCoordenadas] = useState(null);
     const [cargando, setCargando] = useState(false);
